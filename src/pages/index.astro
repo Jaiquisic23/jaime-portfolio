@@ -1,0 +1,17 @@
+---
+import { defaultLang } from '../i18n/config';
+
+const destination = `/${defaultLang}/`;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="refresh" content={`0;url=${destination}`} />
+    <meta name="robots" content="noindex" />
+    <title>Jaime Quintero Sicre</title>
+  </head>
+  <body>
+    <a href={destination}>Continue to the portfolio</a>
+  </body>
+</html>

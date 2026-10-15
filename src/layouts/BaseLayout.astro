@@ -1,0 +1,97 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  lang: string;
+  description?: string;
+  articleDate?: string;
+  active?: 'home' | 'about' | 'experience' | 'articles' | 'contact';
+}
+
+const {
+  title,
+  lang,
+  active = 'home',
+  articleDate,
+  description = 'Jaime Quintero Sicre, Enterprise Solutions Engineer at NTT DATA. Work on enterprise software and personal writing about systems and what he is learning.',
+} = Astro.props;
+
+const supportedLangs = ['en'];
+const currentLang = supportedLangs.includes(lang) ? lang : 'en';
+
+
+const pageTitle =
+  title === 'Home'
+    ? 'Jaime Quintero Sicre | Enterprise Solutions Engineer'
+    : title + ' | Jaime Quintero Sicre';
+const canonicalURL = Astro.site
+  ? new URL(Astro.url.pathname, Astro.site)
+  : undefined;
+---
+
+<html lang={currentLang}>
+  <head>
+    <meta charset="utf-8" />
+    <title>{pageTitle}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#102018" />
+    {canonicalURL && <link rel="canonical" href={canonicalURL} />}
+    <meta property="og:type" content={articleDate ? 'article' : 'website'} />
+    {articleDate && <meta property="article:published_time" content={articleDate} />}
+    {articleDate && <meta name="author" content="Jaime Quintero Sicre" />}
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    {canonicalURL && <meta property="og:url" content={canonicalURL} />}
+    <meta name="twitter:card" content="summary" />
+    <!-- Google Fonts: Space Grotesk & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div class="page-shell">
+      <header class="navbar">
+        <div class="nav-inner">
+          <div class="nav-left"><a href={'/' + currentLang + '/'}>Jaime Quintero Sicre</a></div>
+          <nav class="nav-links" aria-label="Main navigation">
+            <a href={`/${currentLang}/`} class={`nav-link ${active === 'home' ? 'active' : ''}`} aria-current={active === 'home' ? 'page' : undefined}>Home</a>
+            <a href={`/${currentLang}/articles`} class={`nav-link ${active === 'articles' ? 'active' : ''}`} aria-current={active === 'articles' ? 'page' : undefined}>Articles</a>
+            <a href={`/${currentLang}/experience`} class={`nav-link ${active === 'experience' ? 'active' : ''}`} aria-current={active === 'experience' ? 'page' : undefined}>My work</a>
+            <a href={`/${currentLang}/contact`} class={`nav-link ${active === 'contact' ? 'active' : ''}`} aria-current={active === 'contact' ? 'page' : undefined}>Contact</a>
+
+          </nav>
+        </div>
+      </header>
+
+      <main id="main-content" class="page-main" tabindex="-1">
+        <div class="page-main-inner">
+          <slot />
+        </div>
+      </main>
+
+      <footer class="footer">
+        <div class="footer-inner">
+          <div>© {new Date().getFullYear()} Jaime Quintero Sicre</div>
+          <div class="footer-links">
+            <a href={`/${currentLang}/about`} aria-current={active === 'about' ? 'page' : undefined}>About</a>
+            <a href="mailto:jaimequinterosicre@gmail.com">jaimequinterosicre@gmail.com</a>
+            <a
+              href="https://www.linkedin.com/in/jaime-quintero-sicre/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              LinkedIn
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+  </body>
+</html>

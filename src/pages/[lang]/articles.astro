@@ -1,0 +1,83 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { supportedLangs } from '../../i18n/config';
+import { getCollection } from 'astro:content';
+import { articleDate, readingMinutes } from '../../lib/articles';
+
+export function getStaticPaths() {
+  return supportedLangs.map((lang) => ({ params: { lang } }));
+}
+const lang = Astro.params.lang!;
+const [latest, ...older] = (await getCollection('articles'))
+  .filter((post) => post.id.endsWith(`.${lang}.md`))
+  .sort((a, b) => Date.parse(b.data.date) - Date.parse(a.data.date));
+---
+
+<BaseLayout title="Articles" lang={lang} active="articles" description="Personal writing by Jaime Quintero Sicre about production software, the problems he has worked on and what he is learning.">
+  <section class="articles-page">
+    <header class="page-heading">
+      <h1>Articles</h1>
+      <p>I write about problems I’ve worked through and questions I’m still thinking about.</p>
+    </header>
+    {latest ? (
+      <div class="writing-grid">
+        <article class="latest-article">
+          <p class="eyebrow">Latest article</p>
+          <div class="article-meta"><time datetime={latest.data.date}>{articleDate(latest.data.date, lang)}</time><span>{readingMinutes(latest.body)} min read</span></div>
+          <h2><a href={`/${lang}/articles/${latest.slug}`}>{latest.data.title}</a></h2>
+          <p class="article-excerpt">{latest.data.homeSummary ?? latest.data.summary}</p>
+          <a class="text-link" href={`/${lang}/articles/${latest.slug}`}>Read article <span aria-hidden="true">→</span></a>
+        </article>
+        <aside class="writing-context" aria-label="About the author">
+          <h2>Behind the writing</h2>
+          <p>I’m Jaime, an Enterprise Solutions Engineer at NTT DATA. I work on enterprise software using Java and PostgreSQL.</p>
+          <p>Some of the questions I explore here come from investigating problems in production.</p>
+          <a class="text-link" href={`/${lang}/experience`}>Explore my work <span aria-hidden="true">→</span></a>
+        </aside>
+      </div>
+    ) : <p>No articles published yet.</p>}
+    {older.length > 0 && (
+      <section class="older-articles" aria-labelledby="earlier-writing">
+        <h2 id="earlier-writing">Earlier writing</h2>
+        <ul>
+          {older.map((post) => (
+            <li><article>
+              <div class="article-meta"><time datetime={post.data.date}>{articleDate(post.data.date, lang)}</time><span>{readingMinutes(post.body)} min read</span></div>
+              <h3><a href={`/${lang}/articles/${post.slug}`}>{post.data.title}</a></h3>
+              <p>{post.data.summary}</p>
+              <a class="text-link" href={`/${lang}/articles/${post.slug}`}>Read article <span aria-hidden="true">→</span></a>
+            </article></li>
+          ))}
+        </ul>
+      </section>
+    )}
+  </section>
+</BaseLayout>
+
+<style>
+  .articles-page { padding: 24px 0 48px; }
+  .page-heading { margin-bottom: 40px; }
+  h1 { font-size: clamp(2.5rem, 5vw, 3.5rem); line-height: 1.1; letter-spacing: -.04em; }
+  .page-heading p { color: var(--text-muted); max-width: 54ch; font-size: 1.125rem; }
+  .writing-grid { display: grid; grid-template-columns: minmax(0, 2.2fr) minmax(220px, 1fr); gap: 48px; align-items: start; }
+  .latest-article { padding: clamp(24px, 4vw, 44px); background: var(--bg-alt); border: 1px solid var(--border); border-top: 3px solid var(--accent); }
+  .eyebrow { color: var(--accent-strong); font-size: .8rem; font-weight: 600; margin-bottom: 24px; }
+  .article-meta { display: flex; flex-wrap: wrap; gap: 4px 18px; color: var(--text-muted); font-size: .85rem; margin-bottom: 18px; }
+  .latest-article h2 { font-size: clamp(1.8rem, 3.5vw, 2.6rem); line-height: 1.15; letter-spacing: -.035em; max-width: 23ch; }
+  h2 a, h3 a { color: var(--text); }
+  .article-excerpt { color: var(--text-muted); font-size: 1.0625rem; margin: 24px 0; max-width: 52ch; }
+  .text-link { min-height: 44px; }
+  .writing-context { padding-top: 30px; }
+  .writing-context h2 { font-size: 1.1rem; }
+  .writing-context p { color: var(--text-muted); font-size: .95rem; }
+  .older-articles { max-width: 720px; margin-top: 48px; }
+  .older-articles ul { list-style: none; padding: 0; }
+  .older-articles li { padding: 28px 0; border-top: 1px solid var(--border); }
+  .older-articles h3 { font-size: 1.5rem; line-height: 1.3; }
+  @media (max-width: 760px) {
+    .articles-page { padding-top: 12px; }
+    .writing-grid { grid-template-columns: 1fr; gap: 32px; }
+    .page-heading { margin-bottom: 28px; }
+    .writing-context { padding-top: 24px; border-top: 1px solid var(--border); max-width: 58ch; }
+  }
+</style>

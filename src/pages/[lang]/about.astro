@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { supportedLangs, defaultLang } from '../../i18n/config';
+
+export function getStaticPaths() {
+  return supportedLangs.map((code) => ({
+    params: { lang: code },
+  }));
+}
+
+const langParam = Astro.params.lang ?? defaultLang;
+const lang = supportedLangs.includes(langParam as any) ? langParam : defaultLang;
+---
+
+<BaseLayout title="About" lang={lang} active="about" description="About Jaime Quintero Sicre: his interest in software systems, computer engineering background and languages.">
+  <div class="about-page">
+    <section class="section">
+      <h1>About me</h1>
+      <p>I’m Jaime. I work on enterprise software at NTT DATA, and I like following a problem through the system until I understand how the pieces fit together. This site gives me somewhere to write about what I learn and explore other interests.</p>
+      <p>Away from work, I enjoy running and swimming, and I make time for cooking and reading. Learning languages is another interest; Italian is part of my everyday life.</p>
+      <a href={`/${lang}/articles`} class="text-link">Read my articles <span aria-hidden="true">→</span></a>
+    </section>
+    <div class="background-details">
+    <section class="section">
+      <h2>Languages</h2>
+      <ul class="about-list">
+        <li><strong>Spanish:</strong> native.</li>
+        <li><strong>English:</strong> fluent, with a Cambridge B2 certificate.</li>
+        <li><strong>Italian:</strong> advanced, used daily, with a university B2 certificate accredited by CertAcles.</li>
+      </ul>
+    </section>
+    <section class="section">
+      <h2>Education</h2>
+      <p>I studied Computer Engineering (Information Technology) at Universidad de Sevilla, graduating in July 2024. During my degree, I spent the 2022–2023 academic year at Silesian University in Opava on an Erasmus+ exchange.</p>
+    </section>
+    </div>
+    <a href={`/${lang}/experience`} class="text-link">Explore my work <span aria-hidden="true">→</span></a>
+  </div>
+</BaseLayout>
+
+<style>
+  .about-page { max-width: 960px; padding: 24px 0 48px; }
+  .about-page > .section { max-width: 680px; }
+  .about-page > .section p { font-size: 1.0625rem; }
+  .about-page h1 { font-size: clamp(2.5rem, 5vw, 3.5rem); letter-spacing: -.04em; }
+  .about-page h2 { font-size: 1.25rem; }
+  .background-details { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; padding-top: 32px; border-top: 1px solid var(--border); color: var(--text-muted); }
+  .background-details h2 { color: var(--text); }
+  .about-list { padding-left: 1.25rem; }
+  .about-list li { margin-bottom: 8px; }
+  .text-link { min-height: 44px; }
+  @media (max-width: 620px) {
+    .about-page { padding-top: 12px; }
+    .background-details { grid-template-columns: 1fr; gap: 0; }
+    .background-details .section { margin-bottom: 24px; }
+  }
+</style>

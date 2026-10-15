@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { supportedLangs, defaultLang } from '../../i18n/config';
+
+export function getStaticPaths() {
+  return supportedLangs.map((code) => ({
+    params: { lang: code },
+  }));
+}
+
+const langParam = Astro.params.lang ?? defaultLang;
+const lang = supportedLangs.includes(langParam as any) ? langParam : defaultLang;
+---
+
+<BaseLayout title="Contact" lang={lang} active="contact" description="Get in touch with Jaime Quintero Sicre to discuss his writing, engineering work or a possible role.">
+  <section class="section contact-page">
+    <h1>Contact me</h1>
+    <p>If you’d like to discuss something I’ve written, or talk about working together, you can reach me here.</p>
+    <div class="contact-options">
+      <a class="contact-email" href="mailto:jaimequinterosicre@gmail.com">jaimequinterosicre@gmail.com</a>
+      <a class="text-link" href="https://www.linkedin.com/in/jaime-quintero-sicre/" target="_blank" rel="noopener noreferrer">Find me on LinkedIn <span aria-hidden="true">↗</span></a>
+    </div>
+    <div class="contact-note">
+      <h2>About a role</h2>
+      <p>Tell me a little about the team and the work involved. I can share my CV on request.</p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .contact-page { max-width: 720px; padding: 24px 0; }
+  .contact-page h1 { font-size: clamp(2.5rem, 5vw, 3.5rem); letter-spacing: -.04em; }
+  .contact-page > p { max-width: 60ch; color: var(--text-muted); }
+  .contact-options { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; margin: 32px 0; padding: 28px 0; border-block: 1px solid var(--border); }
+  .contact-email { font-size: clamp(1rem, 3vw, 1.5rem); overflow-wrap: anywhere; text-decoration: underline; text-underline-offset: 0.2em; }
+  .contact-note { margin-top: 32px; max-width: 52ch; }
+  .contact-note h2 { font-size: 1.1rem; margin-bottom: 8px; }
+  .contact-note p { color: var(--text-muted); }
+  .contact-options a { min-height: 44px; display: inline-flex; align-items: center; max-width: 100%; }
+  @media (max-width: 480px) { .contact-page { padding-top: 12px; } }
+</style>

@@ -1,0 +1,14 @@
+node_modules
+dist
+.astro/
+.pnpm-store/
+.codex/
+.env
+.env.*
+!.env.example
+reference-documents/
+Master_experienced.txt
+*CV*.pdf
+AGENTS.md
+LINKEDIN_PORTFOLIO_REVIEW.md
+*.log

@@ -1,0 +1,30 @@
+---
+import { getCollection } from 'astro:content';
+import { readingMinutes } from '../lib/articles';
+
+interface Props { lang: string; label?: string; }
+const { lang, label = 'From my writing' } = Astro.props;
+const [article] = (await getCollection('articles'))
+  .filter((post) => post.id.endsWith(`.${lang}.md`))
+  .sort((a, b) => Date.parse(b.data.date) - Date.parse(a.data.date));
+---
+
+{article && (
+  <aside class="writing-link" aria-label={label}>
+    <p class="writing-label">{label} <span>· {readingMinutes(article.body)} min read</span></p>
+    <h2><a href={`/${lang}/articles/${article.slug}`}>{article.data.title}</a></h2>
+    <p class="writing-description">{article.data.homeSummary ?? article.data.summary}</p>
+    <a class="text-link" href={`/${lang}/articles/${article.slug}`}>Read article <span aria-hidden="true">→</span></a>
+  </aside>
+)}
+
+<style>
+  .writing-link { padding: 28px; background: var(--accent-soft); border-left: 3px solid var(--accent); }
+  .writing-label { font-size: .8rem; font-weight: 600; color: var(--accent-strong); margin-bottom: 14px; }
+  .writing-label span { font-weight: 400; }
+  h2 { font-size: clamp(1.25rem, 2.5vw, 1.65rem); line-height: 1.3; letter-spacing: -.025em; margin-bottom: 12px; }
+  h2 a { color: var(--text); }
+  .writing-description { font-size: .95rem; color: var(--text-muted); }
+  .text-link { min-height: 44px; }
+  @media (max-width: 480px) { .writing-link { padding: 22px; } }
+</style>

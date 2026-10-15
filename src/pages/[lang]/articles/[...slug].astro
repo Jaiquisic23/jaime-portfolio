@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { supportedLangs } from '../../../i18n/config';
+import { articleDate, readingMinutes } from '../../../lib/articles';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('articles');
+  return supportedLangs.flatMap((lang) => posts
+    .filter((post) => post.id.endsWith(`.${lang}.md`))
+    .map((post) => ({ params: { lang, slug: post.slug }, props: { post } })));
+}
+
+const { post } = Astro.props;
+const lang = Astro.params.lang!;
+const { Content } = await post.render();
+const related = post.data.relatedWork;
+const discussionURL = `mailto:jaimequinterosicre@gmail.com?subject=${encodeURIComponent(post.data.title)}`;
+---
+
+<BaseLayout title={post.data.title} description={post.data.summary} articleDate={post.data.date} lang={lang} active="articles">
+  <div class="reading-page">
+    <a href={`/${lang}/articles`} class="text-link back-link"><span aria-hidden="true">←</span> All articles</a>
+    <article>
+      <header class="article-header">
+        <h1>{post.data.title}</h1>
+        <div class="article-meta">
+          <a href={`/${lang}/about`} rel="author">Jaime Quintero Sicre</a>
+          <span><time datetime={post.data.date}>{articleDate(post.data.date, lang)}</time> · {readingMinutes(post.body)} min read</span>
+        </div>
+      </header>
+      <div class="article-body"><Content /></div>
+      <footer class="article-end">
+        <p>If this reminds you of a problem you’ve worked on, you can write to me.</p>
+        <a class="text-link" href={discussionURL}>Discuss this article <span aria-hidden="true">↗</span></a>
+      </footer>
+    </article>
+    {related && (
+      <aside class="related-work" aria-label="Related work">
+        <p class="related-label">Another production case</p>
+        <h2><a href={related.href}>{related.title}</a></h2>
+        <p>{related.summary}</p>
+        <a class="text-link" href={related.href}>Read case study <span aria-hidden="true">→</span></a>
+      </aside>
+    )}
+  </div>
+</BaseLayout>
+
+<style>
+  .reading-page { max-width: 720px; margin: 12px auto 56px; }
+  .text-link { min-height: 44px; }
+  .back-link { font-size: .9rem; }
+  .article-header { margin: 28px 0 40px; }
+  h1 { font-size: clamp(2.1rem, 4.6vw, 3.3rem); line-height: 1.12; letter-spacing: -.035em; text-wrap: balance; }
+  .article-meta { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 4px 20px; color: var(--text-muted); font-size: .85rem; }
+  .article-meta a { color: var(--text); }
+  .article-body { font-size: 1.125rem; line-height: 1.85; overflow-wrap: break-word; }
+  .article-body :global(p) { margin-bottom: 1.5em; }
+  .article-body :global(p:first-child) { font-size: 1.1875rem; line-height: 1.75; }
+  .article-body :global(h2), .article-body :global(h3) { margin-top: 2em; scroll-margin-top: 100px; line-height: 1.3; }
+  .article-body :global(a) { text-decoration: underline; text-underline-offset: .2em; }
+  .article-body :global(img) { max-width: 100%; height: auto; }
+  .article-body :global(pre) { padding: 1rem; overflow-x: auto; font-size: .9rem; }
+  .article-body :global(blockquote) { margin-left: 0; padding-left: 1.25rem; border-left: 2px solid var(--border); }
+  .article-end { margin-top: 40px; padding: 24px 0; border-top: 1px solid var(--border); }
+  .article-end p { color: var(--text-muted); margin-bottom: 4px; }
+  .related-work { margin-top: 24px; padding: 28px; background: var(--accent-soft); }
+  .related-label { font-size: .8rem; color: var(--accent-strong); font-weight: 600; }
+  .related-work h2 { font-size: 1.5rem; letter-spacing: -.02em; line-height: 1.3; }
+  .related-work h2 a { color: var(--text); }
+  .related-work > p:not(.related-label) { color: var(--text-muted); }
+  @media (max-width: 480px) {
+    .reading-page { margin-top: 0; }
+    .article-header { margin: 20px 0 28px; }
+    .article-meta { flex-direction: column; margin-top: 22px; }
+    .article-body { font-size: 1.0625rem; line-height: 1.8; }
+    .article-body :global(p:first-child) { font-size: 1.125rem; }
+    .related-work { padding: 24px; }
+  }
+</style>

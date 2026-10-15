@@ -1,0 +1,203 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { supportedLangs, defaultLang } from '../../i18n/config';
+
+export function getStaticPaths() {
+  return supportedLangs.map((lang) => ({ params: { lang } }));
+}
+const lang = Astro.params.lang ?? defaultLang;
+const latestArticles = (await getCollection('articles'))
+  .filter((post) => post.id.endsWith(`.${lang}.md`))
+  .sort((a, b) => Date.parse(b.data.date) - Date.parse(a.data.date))
+  .slice(0, 3);
+const latestArticle = latestArticles[0];
+const formatDate = (date: string) => new Intl.DateTimeFormat(lang, {
+  day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC',
+}).format(new Date(date));
+---
+
+<BaseLayout title="Home" lang={lang} active="home">
+  <section class="home-intro" aria-labelledby="home-title">
+    <p class="intro-identity">Enterprise Solutions Engineer at NTT DATA <span>Working fully remotely</span></p>
+    <h1 id="home-title">Making production systems work better.</h1>
+    <p class="intro-copy">I’m Jaime, I investigate and improve enterprise software using Java, SQL, logs and AI. Here I share part of my work and what I learn from it.</p>
+    <div class="button-row intro-actions">
+      <a href={`/${lang}/experience`} class="btn btn-primary">Explore my work</a>
+      {latestArticle && <a href={`/${lang}/articles/${latestArticle.slug}`} class="text-link">Read article <span aria-hidden="true">→</span></a>}
+    </div>
+  </section>
+
+  <div class="work-and-writing">
+    <section class="featured-work" aria-labelledby="featured-work-title">
+      <p class="home-label">From my work</p>
+      <h2 id="featured-work-title"><a href={`/${lang}/experience#batch-recovery`}>Recovering contracts after a batch failure</a></h2>
+      <div class="recovery-result">
+        <strong>87%</strong>
+        <p>of €60,000 in payments at risk recovered through data analysis, debug and Managers criteria.</p>
+      </div>
+      <p>I fixed a Java batch defect and added a way to recover affected cases. We later reused that functionality for other incidents.</p>
+      <a href={`/${lang}/experience#batch-recovery`} class="text-link">Read case study <span aria-hidden="true">→</span></a>
+    </section>
+
+    {latestArticles.length > 0 && (
+      <section class="writing-preview" aria-labelledby="writing-title" aria-roledescription="carousel">
+        <div class="writing-heading">
+          <h2 id="writing-title">Articles</h2>
+          <a href={`/${lang}/articles`} class="all-writing">All articles <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="writing-slides" aria-live="polite" aria-atomic="true">
+        {latestArticles.map((post, index) => (
+          <article class="writing-item" id={`writing-slide-${index}`} aria-label={`${index + 1} of ${latestArticles.length}`} aria-roledescription="slide" inert={index !== 0}>
+            <div class="writing-meta">
+              <p class="home-label">{index === 0 ? 'Latest article' : 'More writing'}</p>
+              <time datetime={post.data.date}>{formatDate(post.data.date)}</time>
+            </div>
+            <h2><a href={`/${lang}/articles/${post.slug}`}>{post.data.title}</a></h2>
+            <p>{post.data.homeSummary ?? post.data.summary}</p>
+            <a href={`/${lang}/articles/${post.slug}`} class="text-link">Read article <span aria-hidden="true">→</span></a>
+          </article>
+        ))}
+        </div>
+        {latestArticles.length > 1 && (
+          <div class="writing-controls" hidden>
+            <button type="button" data-direction="-1" aria-label="Previous article">←</button>
+            <div class="writing-dots" role="group" aria-label="Choose an article">
+              {latestArticles.map((post, index) => (
+                <button type="button" data-slide={index} aria-controls={`writing-slide-${index}`} aria-label={`Show article: ${post.data.title}`} aria-current={index === 0 ? 'true' : 'false'}><span></span></button>
+              ))}
+            </div>
+            <button type="button" data-direction="1" aria-label="Next article">→</button>
+          </div>
+        )}
+      </section>
+    )}
+  </div>
+
+  <section id="current-work" class="current-work-preview" aria-labelledby="current-work-title">
+    <div class="current-work-copy">
+      <p class="home-label">Current work · September 2026</p>
+      <h2 id="current-work-title"><a href={`/${lang}/work/search-panel`}>Looking beyond a slow search panel</a></h2>
+      <p>Search and export relied on two complex SQL queries. I helped optimise search and improved the export query myself. The investigation also led us to propose moving large exports into a separate batch process.</p>
+      <a href={`/${lang}/work/search-panel`} class="text-link">Read case study <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="search-result">
+      <p class="result-state">Results · Initial tests</p>
+      <dl>
+        <div><dt>Before</dt><dd>&gt;60<span> seconds</span></dd></div>
+        <div><dt>After</dt><dd>~4<span> seconds</span></dd></div>
+      </dl>
+      <p class="result-note">Same query and data. These changes are still in testing.</p>
+    </div>
+  </section>
+
+  <section class="home-contact" aria-labelledby="contact-title">
+    <div>
+      <h2 id="contact-title">Let’s talk</h2>
+      <p>If something here caught your interest, or you’d like to talk about working together, feel free to get in touch.</p>
+    </div>
+    <div class="button-row">
+      <a href="mailto:jaimequinterosicre@gmail.com" class="btn btn-primary">Email me</a>
+      <a href="https://www.linkedin.com/in/jaime-quintero-sicre/" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.writing-preview').forEach((carousel) => {
+    const slides = Array.from(carousel.querySelectorAll<HTMLElement>('.writing-item'));
+    const dots = Array.from(carousel.querySelectorAll<HTMLButtonElement>('[data-slide]'));
+    const controls = carousel.querySelector<HTMLElement>('.writing-controls');
+    if (!controls || slides.length < 2) return;
+    let current = 0;
+    const show = (index: number) => {
+      current = (index + slides.length) % slides.length;
+      slides.forEach((slide, i) => { slide.inert = i !== current; });
+      dots.forEach((dot, i) => dot.setAttribute('aria-current', String(i === current)));
+    };
+    carousel.querySelectorAll<HTMLButtonElement>('[data-direction]').forEach((button) => {
+      button.addEventListener('click', () => show(current + Number(button.dataset.direction)));
+    });
+    dots.forEach((dot, index) => dot.addEventListener('click', () => show(index)));
+    controls.hidden = false;
+  });
+</script>
+
+<style>
+  .home-intro { padding: 36px 0 72px; max-width: 850px; }
+  .intro-identity { color: var(--text-muted); font-size: .875rem; margin-bottom: 20px; }
+  .intro-identity span { display: inline-block; margin-left: 16px; }
+  .home-intro h1 { max-width: 800px; font-size: clamp(2.3rem, 4.6vw, 3.5rem); font-weight: 600; line-height: 1.06; letter-spacing: -.04em; margin-bottom: 20px; }
+  .intro-copy { max-width: 670px; font-size: 1.05rem; line-height: 1.7; color: var(--text-muted); margin: 0; }
+  .intro-actions { align-items: center; gap: 12px 28px; margin-top: 24px; }
+  .intro-actions .text-link { min-height: 44px; }
+  .work-and-writing { display: grid; grid-template-columns: 1.08fr 1fr; gap: 48px; align-items: start; margin-bottom: 56px; }
+  .home-label { margin: 0 0 16px; font-size: .875rem; font-weight: 500; color: var(--accent-strong); }
+  .featured-work, .current-work-preview { padding: 32px; background: var(--ink); color: #f3f8f5; border-radius: 12px; }
+  .featured-work .home-label, .current-work-preview .home-label { color: #a7cfb6; }
+  .featured-work h2, .writing-item h2, .current-work-preview h2 { font-size: clamp(1.5rem, 2.5vw, 1.85rem); line-height: 1.2; letter-spacing: -.025em; }
+  .featured-work > p:not(.home-label) { color: #c6d7cc; }
+  .recovery-result { display: flex; align-items: center; gap: 20px; border-top: 1px solid #3d5446; margin: 24px 0; padding-top: 20px; }
+  .recovery-result strong { font-family: 'Space Grotesk', system-ui; font-size: 3rem; line-height: 1; letter-spacing: -.04em; font-weight: 500; }
+  .recovery-result p { max-width: 26ch; margin: 0; font-size: .875rem; color: #c6d7cc; line-height: 1.55; }
+  .featured-work .text-link, .current-work-preview .text-link { color: #b5edca; min-height: 44px; }
+  .writing-preview { padding: 0; min-width: 0; }
+  .writing-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; margin-bottom: 24px; }
+  .writing-heading h2 { font-size: .875rem; font-weight: 500; color: var(--accent-strong); margin: 0; }
+  .featured-work h2 a, .current-work-preview h2 a { color: inherit; }
+  .featured-work h2 a:hover, .current-work-preview h2 a:hover, .writing-item h2 a:hover { text-decoration: underline; text-underline-offset: .15em; }
+  .featured-work a:focus-visible, .current-work-preview a:focus-visible { outline-color: #b5edca; }
+  .writing-slides { display: grid; }
+  .writing-item { grid-area: 1 / 1; min-width: 0; }
+  .writing-item[inert] { visibility: hidden; }
+  .writing-controls:not([hidden]) { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 20px; }
+  .writing-controls button { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--accent-strong); font: inherit; font-size: 1.25rem; cursor: pointer; }
+  .writing-controls button:hover { background: var(--accent-soft); }
+  .writing-controls button:focus-visible { outline: 2px solid var(--accent-strong); outline-offset: 2px; }
+  .writing-dots { display: flex; }
+  .writing-dots button span { width: 8px; height: 8px; border: 1px solid var(--accent-strong); border-radius: 50%; }
+  .writing-dots button[aria-current="true"] span { background: var(--accent-strong); }
+  .writing-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 20px; margin-bottom: 16px; }
+  .writing-meta .home-label { margin: 0; }
+  .writing-meta time { font-size: .875rem; color: var(--text-muted); }
+  .writing-item h2 a { color: var(--text); }
+  .writing-item > p { color: var(--text-muted); max-width: 48ch; }
+  .writing-item .text-link { min-height: 44px; }
+  .all-writing { display: inline-flex; align-items: center; min-height: 44px; gap: 6px; font-size: .875rem; text-decoration: underline; text-underline-offset: .2em; color: var(--text-muted); }
+  .current-work-preview { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, .8fr); align-items: center; gap: 48px; scroll-margin-top: 100px; }
+  .current-work-copy > p:not(.home-label) { color: #c6d7cc; max-width: 60ch; }
+  .current-work-copy .text-link { min-height: 44px; }
+  .search-result { padding: 24px; color: var(--text); background: var(--accent-soft); border-radius: 8px; }
+  .result-state { color: var(--accent-strong); font-size: .875rem; font-weight: 600; margin-bottom: 20px; }
+  .search-result dl { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 0 0 20px; }
+  .search-result dt { color: var(--text-muted); font-size: .875rem; margin-bottom: 4px; }
+  .search-result dd { margin: 0; font-family: 'Space Grotesk', system-ui; font-size: 2.5rem; line-height: 1.1; letter-spacing: -.04em; }
+  .search-result dd span { display: block; font-family: 'Inter', system-ui; font-size: .875rem; letter-spacing: normal; line-height: 1.5; margin-top: 4px; }
+  .result-note { font-size: .875rem; line-height: 1.6; color: var(--text-muted); margin: 0; }
+  .home-contact { display: flex; justify-content: space-between; align-items: center; gap: 24px 48px; padding: 48px 0; }
+  .home-contact h2 { font-size: 1.75rem; margin-bottom: 12px; }
+  .home-contact p { max-width: 57ch; color: var(--text-muted); margin: 0; }
+  .home-contact .button-row { flex-shrink: 0; margin: 0; }
+  @media (max-width: 900px) {
+    .work-and-writing { gap: 28px; }
+    .featured-work, .current-work-preview { padding: 24px; }
+    .current-work-preview { gap: 32px; }
+    .home-contact { flex-wrap: wrap; }
+  }
+  @media (max-width: 768px) {
+    .home-intro { padding: 16px 0 48px; }
+    .intro-identity span { display: block; margin: 2px 0 0; }
+    .intro-actions { gap: 8px 24px; }
+    .work-and-writing { grid-template-columns: minmax(0, 1fr); gap: 32px; margin-bottom: 32px; }
+    .writing-preview { padding: 0; }
+    .current-work-preview { grid-template-columns: minmax(0, 1fr); gap: 24px; scroll-margin-top: 24px; }
+    .search-result { max-width: 440px; }
+    .home-contact { padding: 32px 0; }
+  }
+  @media (max-width: 360px) {
+    .featured-work, .current-work-preview { padding: 20px; }
+    .search-result { padding: 20px; }
+    .recovery-result { gap: 14px; }
+    .recovery-result strong { font-size: 2.5rem; }
+  }
+</style>

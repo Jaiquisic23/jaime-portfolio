@@ -1,0 +1,65 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import WritingLink from '../../../components/WritingLink.astro';
+import { supportedLangs } from '../../../i18n/config';
+
+export function getStaticPaths() {
+  return supportedLangs.map((lang) => ({ params: { lang } }));
+}
+const lang = Astro.params.lang!;
+---
+
+<BaseLayout title="Looking beyond a slow search panel" lang={lang} active="experience" description="Investigating slow search and export queries, the first SQL improvements and a proposal to move large exports out of the panel.">
+  <div class="case-page">
+  <a href={`/${lang}/experience`} class="text-link back-link"><span aria-hidden="true">←</span> My work</a>
+  <article class="search-case">
+    <div class="work-heading">
+      <span class="section-eyebrow">From my work</span>
+      <span class="work-status">Work in progress · September 2026</span>
+    </div>
+    <h1>Looking beyond a slow search panel</h1>
+    <p class="work-intro">When a search panel started failing under load, we traced the problem to two large queries with many subqueries, one for search and another for data export. Improving the SQL was our first step, but the investigation also led us to review how the panel handled both operations.</p>
+    <div class="work-details">
+      <div>
+        <h2>What I worked on</h2>
+        <p>I investigated the issue by checking execution times and tracing how the panel used each query, then helped improve the search query and optimised the export query myself.</p>
+      </div>
+      <div>
+        <h2>What changed our approach</h2>
+        <p>We initially focused on making the queries faster. Reviewing the panel with Tech Leads and SQL specialists made me question whether large exports needed to run through the panel at all. They used the same filters as search but returned more fields, through a different query.</p>
+        <p>The proposal is to move those exports into a separate batch process that generates the file and sends it to the user, while we improve the search query. This helped me look beyond the SQL and think about what work the panel should actually be doing.</p>
+      </div>
+    </div>
+    <div class="work-next">
+      <h2>Where it stands</h2>
+      <div class="status-result">
+        <h3>Export · In production</h3>
+        <p>The first export optimisation is live and verified in production: it now extracts 350 records in under a minute, compared with 160 in more than a minute before the change. Larger exports still hit the timeout, so we are working on further optimisation while supporting the panel redesign.</p>
+      </div>
+      <div class="status-result">
+        <h3>Search · In testing</h3>
+        <p>Initial tests show the same query returning the same data in about 4 seconds rather than more than 60 seconds. These changes are still in testing, while the broader redesign will be implemented by the development team.</p>
+      </div>
+    </div>
+  </article>
+
+  <WritingLink lang={lang} />
+  </div>
+</BaseLayout>
+
+<style>
+  .case-page { max-width: 760px; margin: 12px auto 56px; }
+  .back-link { min-height: 44px; font-size: .9rem; }
+  .search-case { margin: 28px 0 40px; }
+  .search-case .work-heading { margin-bottom: 24px; }
+  .search-case h1 { font-size: clamp(2rem, 4vw, 2.75rem); line-height: 1.15; letter-spacing: -.03em; }
+  .search-case h2 { font-size: 1.25rem; margin-bottom: 12px; }
+  .search-case p { font-size: 1.0625rem; line-height: 1.8; }
+  .search-case .work-details { gap: 32px; }
+  .search-case .work-details p + p { margin-top: 16px; }
+  .search-case .work-next { margin-top: 32px; padding-top: 32px; }
+  .status-result { padding: 24px; background: var(--bg-alt); border: 1px solid var(--border); margin-top: 20px; }
+  .status-result h3 { font-size: .85rem; color: var(--accent-strong); font-family: inherit; font-weight: 600; }
+  .status-result p { font-size: 1rem; }
+  @media (max-width: 480px) { .case-page { margin-top: 0; } }
+</style>
