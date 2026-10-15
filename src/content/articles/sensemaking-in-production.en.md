@@ -9,7 +9,7 @@ Much of my work investigating production incidents involves reconstructing what 
 
 I am currently reading Crisis Engineering: Time-Tested Tools for Turning Chaos into Clarity, by Marina Nitze, Matthew Weaver and Mikey Dickerson. It has prompted me to reflect on what sensemaking means in my own work: how I build an understanding of a problem, and what might make me reconsider it.
 
-In Crisis Engineering, the discussion of sensemaking draws on [Karl Weick’s work](https://pubsonline.informs.org/doi/10.1287/orsc.1050.0133) alongside [Daniel Kahneman’s distinction](https://www.nobelprize.org/prizes/economic-sciences/2002/kahneman/biographical/) between two modes of thinking. Kahneman’s System 1 is fast and automatic; System 2 involves slower, deliberate effort to examine information and weigh evidence. That effort can still begin from an incorrect assumption.
+In Crisis Engineering, the discussion of sensemaking draws on Karl Weick’s work alongside Daniel Kahneman’s distinction between two modes of thinking. Kahneman’s System 1 is fast and automatic; System 2 involves slower, deliberate effort to examine information and weigh evidence. That effort can still begin from an incorrect assumption.
 
 I think of familiar interpretations as a kind of mental cache. In routine work, a recognised pattern can lead me to reuse an existing understanding without examining it again.
 
