@@ -9,13 +9,13 @@ export function getStaticPaths() {
 const lang = Astro.params.lang!;
 ---
 
-<BaseLayout title="Looking beyond a slow search panel" lang={lang} active="experience" description="Investigating slow search and export queries, the first SQL improvements and a proposal to move large exports out of the panel.">
+<BaseLayout title="Looking beyond a slow search panel" lang={lang} active="experience" description="A search query change passed initial tests but overloaded the production database and was rolled back. The separate export improvement remains in production.">
   <div class="case-page">
   <a href={`/${lang}/experience`} class="text-link back-link"><span aria-hidden="true">←</span> My work</a>
   <article class="search-case">
     <div class="work-heading">
       <span class="section-eyebrow">From my work</span>
-      <span class="work-status">Work in progress · September 2026</span>
+      <span class="work-status">Search change rolled back</span>
     </div>
     <h1>Looking beyond a slow search panel</h1>
     <p class="work-intro">When a search panel started failing under load, we traced the problem to two large queries with many subqueries, one for search and another for data export. Improving the SQL was our first step, but the investigation also led us to review how the panel handled both operations.</p>
@@ -27,18 +27,19 @@ const lang = Astro.params.lang!;
       <div>
         <h2>What changed our approach</h2>
         <p>We initially focused on making the queries faster. Reviewing the panel with Tech Leads and SQL specialists made me question whether large exports needed to run through the panel at all. They used the same filters as search but returned more fields, through a different query.</p>
-        <p>The proposal is to move those exports into a separate batch process that generates the file and sends it to the user, while we improve the search query. This helped me look beyond the SQL and think about what work the panel should actually be doing.</p>
+        <p>We proposed moving those exports into a separate batch process that generates the file and sends it to the user. Later, when the search change caused problems in production, we learned that another team was already building a replacement for the panel. We rolled back my search implementation.</p>
       </div>
     </div>
     <div class="work-next">
       <h2>Where it stands</h2>
       <div class="status-result">
         <h3>Export · In production</h3>
-        <p>The first export optimisation is live and verified in production: it now extracts 350 records in under a minute, compared with 160 in more than a minute before the change. Larger exports still hit the timeout, so we are working on further optimisation while supporting the panel redesign.</p>
+        <p>The first export optimisation remains in production. In production checks, it extracted 350 records in under a minute, compared with 160 in more than a minute before the change. Larger exports still hit the timeout. This was a separate change and was not part of the search rollback.</p>
       </div>
       <div class="status-result">
-        <h3>Search · In testing</h3>
-        <p>Initial tests show the same query returning the same data in about 4 seconds rather than more than 60 seconds. These changes are still in testing, while the broader redesign will be implemented by the development team.</p>
+        <h3>Search · Rolled back</h3>
+        <p>Initial tests in non-production environments returned the same data in about 4 seconds rather than more than 60 seconds. Those tests did not reproduce production conditions. After deployment, my implementation overloaded the database and affected contract processing. We rolled it back to restore normal operation.</p>
+        <a class="text-link" href={`/${lang}/articles/i-broke-production-trying-to-fix-it`}>Read: I broke production trying to fix it <span aria-hidden="true">→</span></a>
       </div>
     </div>
   </article>

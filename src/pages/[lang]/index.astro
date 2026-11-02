@@ -76,18 +76,15 @@ const formatDate = (date: string) => new Intl.DateTimeFormat(lang, {
 
   <section id="current-work" class="current-work-preview" aria-labelledby="current-work-title">
     <div class="current-work-copy">
-      <p class="home-label">Current work · September 2026</p>
+      <p class="home-label">From my work · PostgreSQL</p>
       <h2 id="current-work-title"><a href={`/${lang}/work/search-panel`}>Looking beyond a slow search panel</a></h2>
-      <p>Search and export relied on two complex SQL queries. I helped optimise search and improved the export query myself. The investigation also led us to propose moving large exports into a separate batch process.</p>
+      <p>Initial tests suggested a faster search query. After deployment, my implementation overloaded the production database and affected other processes. We rolled it back, and I wrote about the decisions behind the incident.</p>
       <a href={`/${lang}/work/search-panel`} class="text-link">Read case study <span aria-hidden="true">→</span></a>
     </div>
     <div class="search-result">
-      <p class="result-state">Results · Initial tests</p>
-      <dl>
-        <div><dt>Before</dt><dd>&gt;60<span> seconds</span></dd></div>
-        <div><dt>After</dt><dd>~4<span> seconds</span></dd></div>
-      </dl>
-      <p class="result-note">Same query and data. These changes are still in testing.</p>
+      <p class="result-state">Production change rolled back</p>
+      <p class="result-note">The separate export optimisation remains in production.</p>
+      <a href={`/${lang}/articles/i-broke-production-trying-to-fix-it`} class="text-link">Read: I broke production trying to fix it <span aria-hidden="true">→</span></a>
     </div>
   </section>
 
@@ -169,10 +166,7 @@ const formatDate = (date: string) => new Intl.DateTimeFormat(lang, {
   .current-work-copy .text-link { min-height: 44px; }
   .search-result { padding: 24px; color: var(--text); background: var(--accent-soft); border-radius: 8px; }
   .result-state { color: var(--accent-strong); font-size: .875rem; font-weight: 600; margin-bottom: 20px; }
-  .search-result dl { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 0 0 20px; }
-  .search-result dt { color: var(--text-muted); font-size: .875rem; margin-bottom: 4px; }
-  .search-result dd { margin: 0; font-family: 'Space Grotesk', system-ui; font-size: 2.5rem; line-height: 1.1; letter-spacing: -.04em; }
-  .search-result dd span { display: block; font-family: 'Inter', system-ui; font-size: .875rem; letter-spacing: normal; line-height: 1.5; margin-top: 4px; }
+  .search-result .text-link { margin-top: 16px; color: #75A989; }
   .result-note { font-size: .875rem; line-height: 1.6; color: var(--text-muted); margin: 0; }
   .home-contact { display: flex; justify-content: space-between; align-items: center; gap: 24px 48px; padding: 48px 0; }
   .home-contact h2 { font-size: 1.75rem; margin-bottom: 12px; }

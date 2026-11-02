@@ -38,12 +38,15 @@ const lang = Astro.params.lang!;
 
     <article class="search-preview">
       <div>
-        <p class="eyebrow">Current work · PostgreSQL</p>
+        <p class="eyebrow">From my work · PostgreSQL</p>
         <h2><a href={`/${lang}/work/search-panel`}>Looking beyond a slow search panel</a></h2>
-        <p>Search and export were both struggling under load. After improving the queries, we began questioning whether large exports should run through the panel at all.</p>
+        <p>Initial tests suggested a faster search query. After deployment, my implementation overloaded the production database and affected other processes. We rolled it back, and I wrote about the decisions behind the incident.</p>
         <a class="text-link" href={`/${lang}/work/search-panel`}>Read case study <span aria-hidden="true">→</span></a>
       </div>
-      <p class="search-measure"><strong>Over 60s → about 4s</strong><span>Same search query and data in initial tests. Changes are still in testing.</span></p>
+      <div class="search-measure">
+        <p><strong>Production change rolled back</strong><span>The separate export optimisation remains in production.</span></p>
+        <a class="text-link" href={`/${lang}/articles/i-broke-production-trying-to-fix-it`}>Read: I broke production trying to fix it <span aria-hidden="true">→</span></a>
+      </div>
     </article>
 
     <div class="supporting-cases">
@@ -102,7 +105,7 @@ const lang = Astro.params.lang!;
   .search-preview p:not(.eyebrow) { color: var(--text-muted); max-width: 64ch; }
   .search-measure { align-self: center; margin: 0; }
   .search-measure strong { display: block; color: var(--accent-strong); font-family: "Space Grotesk", sans-serif; font-size: 1.5rem; font-weight: 500; letter-spacing: -.025em; }
-  .search-measure span { display: block; margin-top: 12px; font-size: .85rem; }
+  .search-measure p > span { display: block; margin-top: 12px; font-size: .85rem; }
   .supporting-cases { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; margin: 40px 0; }
   .supporting-cases section p:not(.eyebrow) { color: var(--text-muted); }
   .case-outcome strong { color: var(--text); }
