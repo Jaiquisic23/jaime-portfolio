@@ -6,7 +6,7 @@ date: '2026-11-02'
 slug: i-broke-production-trying-to-fix-it
 ---
 
-Last week, I broke a client's production database while trying to fix a search panel.
+A few weeks ago, I broke a client's production database while trying to fix a search panel.
 
 What was supposed to be a performance improvement ended up saturating the database, slowing down the system and triggering timeouts during contract processing. As a result, operations teams struggled to use the search panel, while other business processes began failing for reasons that initially seemed unrelated.
 
